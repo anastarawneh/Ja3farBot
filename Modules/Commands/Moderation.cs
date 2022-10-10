@@ -1,8 +1,10 @@
-﻿using Discord;
+﻿using Dapper;
+using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Ja3farBot.Services;
 using Ja3farBot.Util;
+using MySql.Data.MySqlClient;
 using static Ja3farBot.Util.MySqlDatatypes;
 
 namespace Ja3farBot.Modules.Commands
@@ -27,6 +29,9 @@ namespace Ja3farBot.Modules.Commands
                 .WithFooter($"User ID: {user.Id}")
                 .WithCurrentTimestamp();
             await ModLog.SendMessageAsync(embed: embed.Build());
+
+            using MySqlConnection connection = MySqlService.GetConnection();
+            await connection.ExecuteAsync("DELETE FROM verification WHERE userid=@userid", new { userid = user.Id });
         }
 
         [SlashCommand("kick", "Kicks a user")]
@@ -44,6 +49,9 @@ namespace Ja3farBot.Modules.Commands
                 .WithFooter($"User ID: {user.Id}")
                 .WithCurrentTimestamp();
             await ModLog.SendMessageAsync(embed: embed.Build());
+
+            using MySqlConnection connection = MySqlService.GetConnection();
+            await connection.ExecuteAsync("DELETE FROM verification WHERE userid=@userid", new { userid = user.Id });
         }
 
         [SlashCommand("mute", "Mutes a user")]

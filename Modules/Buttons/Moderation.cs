@@ -1,6 +1,9 @@
-﻿using Discord;
+﻿using Dapper;
+using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Ja3farBot.Services;
+using MySql.Data.MySqlClient;
 
 namespace Ja3farBot.Modules.Buttons
 {
@@ -21,6 +24,9 @@ namespace Ja3farBot.Modules.Buttons
             await user.RemoveRoleAsync(705470408522072086);
             await Context.Guild.GetTextChannel(550848069160271903).SendMessageAsync($"{user.Mention} has joined! Say hello everyone!");
             await FollowupAsync("User verified.", ephemeral: true);
+
+            using MySqlConnection connection = MySqlService.GetConnection();
+            await connection.ExecuteAsync("UPDATE verification SET verified=1 WHERE userid=@userid", new { userid = user.Id });
         }
 
         [ComponentInteraction("buttons:moderation:denyverification")]
@@ -37,6 +43,9 @@ namespace Ja3farBot.Modules.Buttons
             SocketGuildUser user = Context.Guild.GetUser(ulong.Parse(button.Message.Embeds.First().Footer.Value.Text.Replace("User ID: ", "")));
             await user.SendMessageAsync("Your verification has been denied. Please resend the verification form correctly.");
             await FollowupAsync("User denied.", ephemeral: true);
+
+            using MySqlConnection connection = MySqlService.GetConnection();
+            await connection.ExecuteAsync("UPDATE verification SET messageid=0 WHERE userid=@userid", new { userid = user.Id });
         }
 
         [ComponentInteraction("buttons:moderation:kickverification")]
@@ -63,6 +72,9 @@ namespace Ja3farBot.Modules.Buttons
                 .WithFooter($"User ID: {user.Id}")
                 .WithCurrentTimestamp();
             await Context.Guild.GetTextChannel(552929708959072294).SendMessageAsync(embed: embed.Build());
+
+            using MySqlConnection connection = MySqlService.GetConnection();
+            await connection.ExecuteAsync("DELETE FROM verification WHERE userid=@userid", new { userid = user.Id });
         }
     }
 }

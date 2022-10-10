@@ -1,6 +1,9 @@
-﻿using Discord;
+﻿using Dapper;
+using Discord;
 using Discord.Interactions;
 using Discord.Rest;
+using Ja3farBot.Services;
+using MySql.Data.MySqlClient;
 
 namespace Ja3farBot.Modules.Modals
 {
@@ -68,9 +71,12 @@ namespace Ja3farBot.Modules.Modals
                 .WithButton("Accept", "buttons:moderation:acceptverification", ButtonStyle.Success)
                 .WithButton("Deny", "buttons:moderation:denyverification", ButtonStyle.Danger)
                 .WithButton("Kick", "buttons:moderation:kickverification", ButtonStyle.Danger);
-            await Context.Guild.GetTextChannel(973650806605754389).SendMessageAsync(embed: embed.Build(), components: components.Build());
+            RestUserMessage message = await Context.Guild.GetTextChannel(973650806605754389).SendMessageAsync(embed: embed.Build(), components: components.Build());
 
             await FollowupAsync("Thank you! You will be verified shortly.", ephemeral: true);
+
+            using MySqlConnection connection = MySqlService.GetConnection();
+            await connection.ExecuteAsync("INSERT INTO verification (userid, messageid) VALUES (@userid, @messageid)", new { userid = Context.User.Id, messageid = message.Id });
         }
     }
 

@@ -1,8 +1,10 @@
-﻿using Discord;
+﻿using Dapper;
+using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Ja3farBot.Modules.Modals;
 using Ja3farBot.Services;
+using MySql.Data.MySqlClient;
 using static Ja3farBot.Util.FileDatatypes;
 
 namespace Ja3farBot.Modules.Buttons
@@ -48,6 +50,12 @@ namespace Ja3farBot.Modules.Buttons
         [ComponentInteraction("buttons:user:verify")]
         public async Task VerifyButton()
         {
+            using MySqlConnection connection = MySqlService.GetConnection();
+            if (await connection.ExecuteScalarAsync<bool>("SELECT messageid FROM verification WHERE userid=@userid", new { userid = Context.User.Id }))
+            {
+                await RespondAsync("Your previous verification form is pending, please wait.", ephemeral: true);
+                return;
+            }
             await RespondWithModalAsync<VerificationModal>("modals:user:verification");
         }
     }
