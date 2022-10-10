@@ -53,6 +53,16 @@ namespace Ja3farBot.Modules.Buttons
             SocketGuildUser user = Context.Guild.GetUser(ulong.Parse(button.Message.Embeds.First().Footer.Value.Text.Replace("User ID: ", "")));
             await user.KickAsync($"Failed verification. Mod ID: {Context.User.Id}");
             await FollowupAsync("User kicked.", ephemeral: true);
+
+            EmbedBuilder embed = new EmbedBuilder()
+                .WithTitle("User Kicked")
+                .WithAuthor(Context.User)
+                .WithColor(255, 0, 0)
+                .AddField("User", user)
+                .AddField("Reason", "Failed verification.")
+                .WithFooter($"User ID: {user.Id}")
+                .WithCurrentTimestamp();
+            await Context.Guild.GetTextChannel(552929708959072294).SendMessageAsync(embed: embed.Build());
         }
     }
 }
