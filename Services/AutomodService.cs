@@ -17,7 +17,7 @@ namespace Ja3farBot.Services
             _client.MessageReceived += async (message) =>
             {
                 if (message is not SocketUserMessage userMessage || message.Author.IsBot || message.Channel is not SocketGuildChannel) return;
-                foreach (string phrase in Config.BannedWords) if (message.Content.Contains(phrase))
+                foreach (string phrase in Config.BannedWords) if (message.Content.ToLower().Contains(phrase))
                     {
                         await LogActionAsync(message, "Banned word");
                         await message.DeleteAsync();
