@@ -211,9 +211,9 @@ namespace Ja3farBot.Services
             _client.MessageUpdated += async (message1Cacheable, message2, channel) =>
             {
                 bool cancel = channel is IDMChannel ||
-                    message1Cacheable.Value.Author.IsBot ||
+                    (await message1Cacheable.GetOrDownloadAsync()).Author.IsBot ||
                     new List<ulong> { 553926270417633281 }.Contains(channel.Id) ||
-                    message1Cacheable.GetOrDownloadAsync().Result == null ||
+                    message1Cacheable.Value == null ||
                     message1Cacheable.Value.Content == null ||
                     message2.Content == null ||
                     message1Cacheable.Value.Content == message2.Content;
