@@ -53,7 +53,7 @@ namespace Ja3farBot.Services
             Color green = new(83, 221, 172);
             Color red = new(221, 95, 83);
             _client.ChannelCreated += async (channel) => {
-                bool cancel = channel is not SocketGuildChannel guildChannel || guildChannel.Name.Contains("'s VC") || guildChannel.Guild.GetCategoryChannel(552923152595025930).Channels.Contains(channel);
+                bool cancel = channel is not SocketGuildChannel guildChannel || guildChannel.Name.Contains("'s VC");
                 if (cancel) return;
 
                 guildChannel = (SocketGuildChannel)channel;
