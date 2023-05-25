@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
+using Quartz.Logging;
 
 namespace Ja3farBot.Services
 {
@@ -58,6 +59,48 @@ namespace Ja3farBot.Services
             Console.WriteLine($"[{DateTime.Now} @ {Source}] {Message}");
             Console.ResetColor();
             return Task.CompletedTask;
+        }
+    }
+
+    public class QuartzLogProvider : ILogProvider
+    {
+        public Logger GetLogger(string name)
+            => (level, func, exception, parameters) =>
+            {
+                if (func != null) switch (level)
+                    {
+                        case LogLevel.Trace:
+                            LogService.Debug("Quartz", func());
+                            break;
+                        case LogLevel.Debug:
+                            LogService.Verbose("Quartz", func());
+                            return true;
+                        case LogLevel.Info:
+                            LogService.Info("Quartz", func());
+                            return true;
+                        case LogLevel.Warn:
+                            LogService.Warning("Quartz", func());
+                            return true;
+                        case LogLevel.Error:
+                            LogService.Error("Quartz", func());
+                            return true;
+                        case LogLevel.Fatal:
+                            LogService.Critical("Quartz", func());
+                            return true;
+                        default:
+                            return false;
+                    }
+                return true;
+            };
+
+        public IDisposable OpenMappedContext(string key, object value, bool destructure = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDisposable OpenNestedContext(string message)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -47,6 +47,7 @@ namespace Ja3farBot
                 .AddSingleton<LogService>()
                 .AddSingleton<MySqlService>()
                 .AddSingleton<RoleSelectionService>()
+                .AddSingleton<SchedulerService>()
                 .AddSingleton<SuggestionService>()
                 .BuildServiceProvider();
 
@@ -56,6 +57,7 @@ namespace Ja3farBot
             _serviceProvider.GetRequiredService<CustomVCService>().Initialize();
             _serviceProvider.GetRequiredService<LogService>().Initialize();
             await _serviceProvider.GetRequiredService<MySqlService>().InitializeAsync();
+            await _serviceProvider.GetRequiredService<SchedulerService>().InitializeAsync();
             _serviceProvider.GetRequiredService<SuggestionService>().Initialize();
 
             await _interactionService.AddModulesAsync(Assembly.GetEntryAssembly(), _serviceProvider);
