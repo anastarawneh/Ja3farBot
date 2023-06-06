@@ -45,7 +45,7 @@ namespace Ja3farBot.Modules.Commands
                 .WithAuthor(Context.User)
                 .WithColor(255, 0, 0)
                 .AddField("User", user)
-                .AddField("Reason", reason != "" ? reason : "None")
+                .AddField("Reason", reason ?? "None")
                 .WithFooter($"User ID: {user.Id}")
                 .WithCurrentTimestamp();
             await ModLog.SendMessageAsync(embed: embed.Build());
